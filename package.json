@@ -1,0 +1,72 @@
+{
+	"name": "imoova-bot",
+	"displayName": "Imoova Bot",
+	"description": "TG Bot to parce adverts from Imoova",
+	"version": "1.0.0",
+	"main": "dist/core/bot.js",
+	"license": "MIT",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"scripts": {
+		"init": "npm install && husky install",
+		"init:token": "ts-node scripts/configs.ts && ts-node scripts/init.ts",
+		"init:certs": "ts-node scripts/initCerts.ts",
+		"start": "node dist/app/core/bot.js",
+		"start-pm2": "pm2 start .pm2-process.json",
+		"start-docker": "pm2-runtime .pm2-docker.json",
+		"stop-pm2": "pm2 stop .pm2-process.json",
+		"dev": "npm run dev-mongo && npm run dev-bot",
+		"dev-mongo": "docker compose up mongo",
+		"dev-bot": "ts-node scripts/configs.ts && ts-node scripts/debug.ts --enable && ts-node scripts/rmdist.ts && nodemon --exec ts-node --compiler typescript app/core/bot.ts",
+		"build": "tsc",
+		"release": "ts-node scripts/configs.ts && ts-node scripts/debug.ts --enable && npm run build && tsc --declaration --emitDeclarationOnly",
+		"lint": "eslint . --cache --ext .ts,.js",
+		"lint-fix": "eslint . --cache --ext .ts,.js --fix",
+		"npm-publish-main": "git checkout main && npm publish",
+		"npm-publish-beta": "git checkout beta && npm publish --tag beta",
+		"npm-publish-nightly": "git checkout nightly && npm publish --tag nightly",
+		"pre-commit": "npm run lint-fix",
+		"pkg-clean": "rm -rf node_modules package-lock.json && npm install && husky install",
+		"pkg-update": "npm update",
+		"pkg-upgrade": "npx npm-check-updates -u && npm install && husky install",
+		"prepare": "ts-patch install -s"
+	},
+	"dependencies": {
+		"axios": "^0.25.0",
+		"dotenv": "^15.0.0",
+		"express": "^4.17.1",
+		"localtunnel": "^2.0.2",
+		"mongoose": "5.13.5",
+		"telegraf": "^4.4.2"
+	},
+	"devDependencies": {
+		"@types/bson": "^4.2.0",
+		"@types/express": "^4.17.13",
+		"@types/localtunnel": "^2.0.1",
+		"@types/lowdb": "^1.0.9",
+		"@types/node": "^15.0.1",
+		"@types/shelljs": "^0.8.8",
+		"@types/yargs": "^17.0.8",
+		"@typescript-eslint/eslint-plugin": "^4.22.0",
+		"@typescript-eslint/parser": "^4.22.0",
+		"eslint": "^7.25.0",
+		"eslint-plugin-jsdoc": "^32.3.3",
+		"husky": "^6.0.0",
+		"json": "^11.0.0",
+		"nodemon": "^2.0.7",
+		"pm2": "^4.5.6",
+		"replace-in-file": "^6.2.0",
+		"shelljs": "^0.8.4",
+		"ts-node": "^9.1.1",
+		"ts-patch": "^2.0.1",
+		"typescript": "^4.2.4",
+		"typescript-transform-paths": "^2.2.3",
+		"yargs": "^16.2.0"
+	},
+	"keywords": [
+		"Imoova",
+		"Bot",
+		"Telegram"
+	]
+}

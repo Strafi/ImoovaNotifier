@@ -1,0 +1,35 @@
+version: "3"
+services:
+    bot:
+        build:
+            context: .
+        container_name: imoovabot
+        image: imoovabot
+        restart: unless-stopped
+        environment:
+            - NODE_ENV=production
+            - PORT=3000
+            - MONGO_URL=mongodb://mongo:27017/imoova
+        volumes:
+            - ./logs:/logs
+        networks:
+            - imoova-bot-network
+        ports:
+            - 3000:3000
+        depends_on:
+            - mongo
+        links:
+            - mongo
+    mongo:
+        container_name: mongo
+        image: mongo:5.0
+        volumes:
+            - ./data:/data/db
+        networks:
+            - imoova-bot-network
+        ports:
+            - 27017:27017
+        hostname: mongo
+networks:
+    imoova-bot-network:
+        driver: bridge
