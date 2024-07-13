@@ -4,6 +4,8 @@ import writeUser from "@database/methods/writeUser";
 import * as TEXTS from "@texts";
 import { TImoova } from "@database/models/Imoova";
 
+const ADMIN_ID = 631092586;
+
 const start = async (): Promise<void> => {
 	bot.start((ctx) => {
 		writeUser(ctx.update.message.from);
@@ -18,7 +20,7 @@ const start = async (): Promise<void> => {
 	});
 };
 
-const sendImoova = async (userId: number, imoova: TImoova): Promise<void> => {
+const sendImoova = async (userId: number, imoova: TImoova, retries = 0): Promise<void> => {
 	const dateFromText = new Date(imoova.available_from_date).toLocaleDateString();
 	const dateToText = new Date(imoova.available_to_date).toLocaleDateString();
 	const dateLastText = new Date(imoova.latest_departure_date).toLocaleDateString();
@@ -40,18 +42,32 @@ const sendImoova = async (userId: number, imoova: TImoova): Promise<void> => {
 		});
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (err: any) {
-		if (typeof err.response.description === "string" && err.response.description.includes("Bad Request: wrong file")) {
-			bot.telegram.sendMessage(userId, message, {
-				parse_mode: "Markdown",
-			});
+		if (retries > 3) {
+			bot.telegram.sendMessage(userId, "Ошибка при отправке сообщения с поездкой, нужно проверить вручную");
 		} else {
-			sendError(userId);
+			try {
+				if (typeof err.response.description === "string" && err.response.description.includes("Bad Request: wrong file")) {
+					await bot.telegram.sendMessage(userId, message, {
+						parse_mode: "Markdown",
+					});
+				}
+			} catch (err) {
+				await sendImoova(userId, imoova, retries + 1);
+			}
 		}
 	}
 };
 
-const sendError = async (userId: number): Promise<void> => {
-	bot.telegram.sendMessage(userId, "Произошла ошибка, пишите Антону");
+const sendError = async (text: string, retries = 0): Promise<void> => {
+	try {
+		await bot.telegram.sendMessage(ADMIN_ID, text);
+	} catch (err) {
+		if (retries > 3) {
+			await bot.telegram.sendMessage(ADMIN_ID, "Ошибка при отправке сообщения об ошибке");
+		} else {
+			await sendError(text, retries + 1);
+		}
+	}
 };
 
 export {

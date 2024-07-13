@@ -2,6 +2,7 @@ import bot from "@app/functions/telegraf";
 import { subscribeUser } from "@database/methods/subscribeUser";
 import { unsubscribeUser } from "@database/methods/unsubscribeUser";
 import * as TEXTS from "@texts";
+import { lastSuccessfulCheck } from "@app/core/watchImoovas";
 
 const run = async (): Promise<void> => {
 	bot.hears(TEXTS.KEYBOARD_BUTTONS.RUN, (ctx) => {
@@ -12,7 +13,7 @@ const run = async (): Promise<void> => {
 
 const ping = async (): Promise<void> => {
 	bot.hears(TEXTS.KEYBOARD_BUTTONS.PING, (ctx) => {
-		ctx.reply("Понг");
+		ctx.reply(`Понг ${lastSuccessfulCheck?.toString() || ""}`);
 	});
 };
 

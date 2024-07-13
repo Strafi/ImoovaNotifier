@@ -20,6 +20,8 @@ const CHECK_INTERVAL = 60000;
 
 let intervalId: NodeJS.Timeout;
 
+export let lastSuccessfulCheck: Date | null = null;
+
 function requestImoovas(first = 100, page = 1) {
 	return axios.post(
 		"https://www.imoova.com/en/relocations?region=EU",
@@ -98,17 +100,13 @@ async function watchImoovas(): Promise<void> {
 					sendImoova(user.id, imoova);
 				});
 			});
-		} catch (err) {
+
+			lastSuccessfulCheck = new Date();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
 			console.error(err);
 
-			try {
-				const subscribedUsers = await User.find({ isSubscribed: true });
-				subscribedUsers.forEach((user) => {
-					sendError(user.id);
-				});
-			} catch (err) {
-				console.error(err);
-			}
+			sendError(err?.message || "Ошибка при запросе данных с Imoova");
 		}
 	}, CHECK_INTERVAL);
 }
