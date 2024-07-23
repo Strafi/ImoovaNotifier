@@ -83,7 +83,7 @@ async function watchImoovas(): Promise<void> {
 			const response = await requestImoovas();
 			const { data } = parseImoovasResponse(response);
 
-			const onlyLongTrips = data.filter((trip) => trip.hire_units_allowed >= 7);
+			const onlyLongTrips = data.filter((trip) => trip.hire_units_allowed >= 5);
 			const imoovasInDb = await Imoova.find();
 			const newImoovas = onlyLongTrips.filter((trip) => !imoovasInDb.some((dbTrip) => dbTrip.id === trip.id));
 			const outdatedImoovas = imoovasInDb.filter((trip) => !onlyLongTrips.some((newTrip) => newTrip.id === trip.id));
@@ -106,7 +106,11 @@ async function watchImoovas(): Promise<void> {
 		} catch (err: any) {
 			console.error(err);
 
-			sendError(err?.message || "Ошибка при запросе данных с Imoova");
+			const isMiscError = err?.message?.includes("EAI_AGAIN");
+
+			if (!isMiscError) {
+				sendError(err?.message || "Ошибка при запросе данных с Imoova");
+			}
 		}
 	}, CHECK_INTERVAL);
 }
