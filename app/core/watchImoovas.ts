@@ -104,11 +104,10 @@ async function watchImoovas(): Promise<void> {
 			lastSuccessfulCheck = new Date();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			console.error(err);
-
 			const isMiscError = err?.message?.includes("EAI_AGAIN");
 
 			if (!isMiscError) {
+				console.error(err);
 				sendError(err?.message || "Ошибка при запросе данных с Imoova");
 			}
 		}
