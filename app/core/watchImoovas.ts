@@ -15,7 +15,7 @@ type PaginatorInfo = {
 	perPage: number;
 }
 
-const CHECK_INTERVAL = 6000;
+const CHECK_INTERVAL = 60000;
 
 let intervalId: NodeJS.Timeout;
 

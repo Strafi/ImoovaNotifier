@@ -2,7 +2,7 @@
 
 import User, { IUser } from "../models/User";
 
-const writeUser = async (userToWrite: Omit<IUser, "isSubscribed">): Promise<boolean> => {
+const writeUser = async (userToWrite: Omit<IUser, "isSubscribed" | "minimumNights">): Promise<boolean> => {
 	try {
 		const userInDB = await User.findOne({ id: userToWrite.id });
 

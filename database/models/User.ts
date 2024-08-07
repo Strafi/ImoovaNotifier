@@ -4,6 +4,7 @@ import TimeStampPlugin, { ITimeStampedDocument } from "./plugins/timestamp-plugi
 export interface IUser {
 	id: number;
 	isSubscribed: boolean;
+	minimumNights: number;
 	is_bot?: boolean;
 	first_name?: string;
 	username?: string;
@@ -40,6 +41,11 @@ const schema = new Schema<IUser>({
 		type: Boolean,
 		required: true,
 		default: false,
+	},
+	minimumNights: {
+		type: Number,
+		required: false,
+		default: 5,
 	},
 });
 
